@@ -5,7 +5,7 @@ input.onButtonPressed(Button.A, function () {
 // 挿されている場所を0-4で返す
 // 刺さっていない場合は-1
 function getLocation () {
-    serial.writeValue(control.deviceName(), Math.ceil(Math.map(pins.analogReadPin(AnalogPin.P2), 0, 1023, -1, 4)))
+    serial.writeValue(convertToText(cardNumber), Math.ceil(Math.map(pins.analogReadPin(AnalogPin.P2), 0, 1023, -1, 4)))
     return Math.ceil(Math.map(pins.analogReadPin(AnalogPin.P2), 0, 1023, -1, 4))
 }
 radio.onReceivedString(function (gameEventStr) {
@@ -27,8 +27,11 @@ function extractGameEventStatus (gameEventStr: string) {
     return parseFloat(gameEventStr.split("_")[1])
 }
 let gameResult = ""
+let cardNumber = 0
 radio.setGroup(1)
 pins.analogWritePin(AnalogPin.P1, 1023)
+cardNumber = 1
+basic.showNumber(cardNumber)
 basic.forever(function () {
     while (gameResult == "win") {
         basic.showIcon(IconNames.Yes)
@@ -36,6 +39,6 @@ basic.forever(function () {
     while (gameResult == "lose") {
         basic.showIcon(IconNames.No)
     }
-    radio.sendValue(control.deviceName(), getLocation())
+    radio.sendValue(convertToText(cardNumber), getLocation())
     basic.pause(500)
 })
